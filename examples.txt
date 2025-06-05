@@ -1,0 +1,236 @@
+//──────────────────────────────────────────────────────────────────────────────
+// 8. Crate‑Specific Examples (20 total)
+//──────────────────────────────────────────────────────────────────────────────
+
+// 8‑1. Serde + serde_json
+mod serde_json_example {
+    use serde::{Serialize, Deserialize};
+    #[derive(Serialize, Deserialize, Debug)]
+    struct User { name: String, age: u8 }
+    pub fn run() {
+        let user = User { name: "Alice".into(), age: 30 };
+        let json = serde_json::to_string(&user).unwrap();
+        println!("JSON: {}", json);
+        let user2: User = serde_json::from_str(&json).unwrap();
+        println!("User2: {:?}", user2);
+    }
+}
+
+// 8‑2. Rand
+mod rand_example {
+    pub fn run() {
+        let mut rng = rand::thread_rng();
+        let x: u8 = rand::Rng::gen(&mut rng);
+        println!("Random u8: {}", x);
+    }
+}
+
+// 8‑3. Clap (basic)
+mod clap_example {
+    pub fn run() {
+        let _ = clap::Command::new("myapp")
+            .arg(clap::Arg::new("debug").short('d'))
+            .get_matches();
+    }
+}
+
+// 8‑4. Tokio async echo server
+mod tokio_echo_server {
+    use tokio::net::TcpListener; use tokio::io::{AsyncReadExt, AsyncWriteExt};
+    #[tokio::main]
+    async fn main_async() -> std::io::Result<()> {
+        let listener = TcpListener::bind("127.0.0.1:8080").await?;
+        loop {
+            let (mut sock, _) = listener.accept().await?;
+            tokio::spawn(async move {
+                let mut buf = [0u8; 1024];
+                loop {
+                    let n = sock.read(&mut buf).await.unwrap();
+                    if n == 0 { return; }
+                    sock.write_all(&buf[..n]).await.unwrap();
+                }
+            });
+        }
+    }
+}
+
+// 8‑5. Reqwest blocking GET
+mod reqwest_example {
+    pub fn run() {
+        let resp = reqwest::blocking::get("https://httpbin.org/ip").unwrap();
+        println!("Status: {}", resp.status());
+        println!("Body: {}", resp.text().unwrap());
+    }
+}
+
+// 8‑6. Regex
+mod regex_example {
+    pub fn run() {
+        let re = regex::Regex::new(r"(\\w+)\\s+(\\d+)").unwrap();
+        for cap in re.captures_iter("Alice 30\nBob 199") {
+            println!("Name: {}, Age: {}", &cap[1], &cap[2]);
+        }
+    }
+}
+
+// 8‑7. Chrono
+mod chrono_example {
+    use chrono::{DateTime, Local, NaiveDate, Utc};
+    pub fn run() {
+        let now: DateTime<Local> = Local::now();
+        println!("Now: {}", now);
+        let date = NaiveDate::parse_from_str("2025-06-04", "%Y-%m-%d").unwrap();
+        println!("Parsed: {}", date);
+        let dt = date.and_hms(12, 0, 0).and_local_timezone(Utc).unwrap();
+        println!("UTC noon: {}", dt);
+    }
+}
+
+// 8‑8. Anyhow
+mod anyhow_example {
+    use anyhow::{Result, Context}; use std::fs;
+    fn read_config(path: &str) -> Result<String> {
+        fs::read_to_string(path).with_context(|| format!("Failed to read {}", path))
+    }
+    pub fn run() {
+        if let Err(e) = read_config("nope.txt") { eprintln!("{}", e); }
+    }
+}
+
+// 8‑9. Thiserror
+mod thiserror_example {
+    use thiserror::Error; use std::io;
+    #[derive(Error, Debug)]
+    enum MyError {
+        #[error("Invalid: {0}")]
+        Invalid(String),
+        #[error("IO: {0}")]
+        Io(#[from] io::Error),
+    }
+    fn work(s: &str) -> Result<(), MyError> {
+        if s.len() < 3 { return Err(MyError::Invalid(s.into())); }
+        io::stdout().write_all(s.as_bytes())?;
+        Ok(())
+    }
+    pub fn run() { let _ = work("hi"); }
+}
+
+// 8‑10. Crossbeam select + tick
+mod crossbeam_example {
+    use crossbeam::channel::{unbounded, tick, select}; use std::time::Duration;
+    pub fn run() {
+        let (tx, rx) = unbounded();
+        std::thread::spawn(move || { for i in 0..3 { tx.send(i).unwrap(); } });
+        let ticker = tick(Duration::from_millis(100));
+        loop {
+            select! {
+                recv(rx) -> msg => match msg {
+                    Ok(v) => println!("recv {}", v),
+                    Err(_) => break,
+                },
+                recv(ticker) -> _ => println!("tick"),
+            }
+        }
+    }
+}
+
+// 8‑11. Rayon parallel iterator
+mod rayon_example {
+    use rayon::prelude::*;
+    pub fn run() {
+        let sum: i32 = (1..=8).into_par_iter().map(|x| x * x).sum();
+        println!("Sum of squares = {}", sum);
+    }
+}
+
+// 8‑12. Tracing structured logging
+mod tracing_example {
+    use tracing::{info, span, Level};
+    pub fn run() {
+        let _ = tracing_subscriber::fmt::try_init();
+        let main_span = span!(Level::INFO, "main");
+        let _e = main_span.enter();
+        info!(action = "start", "App start");
+        info!(action = "end", "App end");
+    }
+}
+
+// 8‑13. Log + env_logger
+mod log_example {
+    use log::{info, warn};
+    pub fn run() {
+        let _ = env_logger::builder().is_test(true).try_init();
+        info!("Hello log");
+        warn!("Something happened");
+    }
+}
+
+// 8‑14. Itertools utilities
+mod itertools_example {
+    use itertools::Itertools;
+    pub fn run() {
+        let v = vec![1,2,2,3,3,3];
+        println!("unique → {:?}", v.iter().cloned().unique().collect::<Vec<_>>());
+        let words = ["rust", "is", "fun"];
+        println!("join → {}", words.iter().join("-"));
+    }
+}
+
+// 8‑15. Once_cell lazy static
+mod once_cell_example {
+    use once_cell::sync::Lazy; use std::collections::HashMap;
+    static CONFIG: Lazy<HashMap<&'static str, &'static str>> = Lazy::new(|| {
+        let mut m = HashMap::new(); m.insert("version", "1.0"); m
+    });
+    pub fn run() { println!("version = {}", CONFIG["version"]); }
+}
+
+// 8‑16. Uuid
+mod uuid_example {
+    pub fn run() {
+        let id = uuid::Uuid::new_v4();
+        println!("New UUID: {}", id);
+    }
+}
+
+// 8‑17. Tempfile
+mod tempfile_example {
+    use tempfile::NamedTempFile; use std::io::{Write, Read};
+    pub fn run() {
+        let mut tmp = NamedTempFile::new().unwrap();
+        writeln!(tmp, "hello").unwrap();
+        let mut f = tmp.reopen().unwrap();
+        let mut s = String::new(); f.read_to_string(&mut s).unwrap();
+        println!("Temp content: {}", s.trim());
+    }
+}
+
+// 8‑18. Bitflags
+mod bitflags_example {
+    use bitflags::bitflags; bitflags! {
+        struct Perm: u32 { const R=0b01; const W=0b10; }
+    }
+    pub fn run() {
+        let mut p = Perm::R | Perm::W; p.remove(Perm::R);
+        println!("{:02b}", p.bits());
+    }
+}
+
+// 8‑19. Parking_lot Mutex
+mod parking_lot_example {
+    use parking_lot::Mutex; use std::sync::Arc; use std::thread;
+    pub fn run() {
+        let counter = Arc::new(Mutex::new(0));
+        let mut handles = vec![];
+        for _ in 0..5 {
+            let c = Arc::clone(&counter);
+            handles.push(thread::spawn(move || { *c.lock() += 1; }));
+        }
+        for h in handles { h.join().unwrap(); }
+        println!("counter = {}", *counter.lock());
+    }
+}
+
+//──────────────────────────────────────────────────────────────────────────────
+// End of Comprehensive Reference
+//──────────────────────────────────────────────────────────────────────────────

@@ -15,6 +15,7 @@ use crate::section4_traits;
 use crate::section5_enums;
 use crate::section6_idioms;
 use crate::section7_concurrency;
+use crate::section8_crates;
 
 use std::io::{self, Write};
 
@@ -67,7 +68,7 @@ pub fn run_interactive_demo() {
             }
             "8" => {
                 clear_screen();
-                run_crate_examples();
+                section8_crates::run_all_demos();
                 wait_for_enter();
             }
             "all" | "ALL" => {
@@ -158,57 +159,12 @@ pub fn run_all_sections() {
     section7_concurrency::run_all_demos();
     println!("\n{}\n", "=".repeat(60));
     
-    run_crate_examples();
+    section8_crates::run_all_demos();
     
     println!("\n🎉 ALL SECTIONS COMPLETED! 🎉");
     println!("You've seen a comprehensive overview of Rust!");
 }
 
-/// Run the crate examples from section 8
-fn run_crate_examples() {
-    println!("🦀 RUST LECTURE - SECTION 8: POPULAR CRATE EXAMPLES 🦀");
-    println!("========================================================");
-    println!();
-    println!("This section demonstrates 20 popular Rust crates and their use cases:");
-    println!();
-    
-    let crates = [
-        ("1. Serde + serde_json", "Serialization and deserialization framework"),
-        ("2. Rand", "Random number generation with cryptographically secure options"),
-        ("3. Clap", "Command Line Argument Parser for building CLI applications"),
-        ("4. Tokio", "Asynchronous runtime for async/await programming"),
-        ("5. Reqwest", "HTTP client for making REST API calls"),
-        ("6. Regex", "Regular expressions for pattern matching and text processing"),
-        ("7. Chrono", "Date and time handling with timezone support"),
-        ("8. Anyhow", "Simplified error handling with context and error chaining"),
-        ("9. Thiserror", "Custom error types with derive macros"),
-        ("10. Crossbeam", "Advanced concurrency with lock-free data structures"),
-        ("11. Rayon", "Data parallelism with parallel iterators"),
-        ("12. Tracing", "Structured logging and observability"),
-        ("13. Log + env_logger", "Traditional logging facade with configurable backends"),
-        ("14. Itertools", "Extended iterator methods for functional programming"),
-        ("15. Once_cell", "Thread-safe lazy initialization and global state"),
-        ("16. Uuid", "Universally unique identifiers generation and parsing"),
-        ("17. Tempfile", "Temporary file and directory management"),
-        ("18. Bitflags", "Type-safe bit flag operations and combinations"),
-        ("19. Parking_lot", "High-performance synchronization primitives"),
-        ("20. Dashmap", "Concurrent HashMap with fine-grained locking"),
-    ];
-    
-    for (name, description) in crates {
-        println!("📦 {}", name);
-        println!("   └─ {}", description);
-    }
-    
-    println!();
-    println!("💡 These crates represent the most commonly used libraries in the Rust ecosystem.");
-    println!("💡 Each provides essential functionality for real-world Rust applications.");
-    println!("💡 The examples in main.rs show practical usage patterns for each crate.");
-    
-    println!();
-    println!("✅ Section 8 complete!");
-    println!("💡 Key takeaway: Rust's crate ecosystem provides powerful, well-designed libraries!");
-}
 
 /// Individual demo runners for fine-grained control during lectures
 pub mod individual_demos {
@@ -310,6 +266,33 @@ pub mod individual_demos {
         }
     }
     
+    /// Run a specific demo from section 8
+    pub fn run_section8_demo(demo_name: &str) {
+        match demo_name {
+            "1" | "serde" => section8_crates::demo_1_serde_json(),
+            "2" | "rand" => section8_crates::demo_2_rand(),
+            "3" | "clap" => section8_crates::demo_3_clap(),
+            "4" | "tokio" => section8_crates::demo_4_tokio(),
+            "5" | "reqwest" => section8_crates::demo_5_reqwest(),
+            "6" | "regex" => section8_crates::demo_6_regex(),
+            "7" | "chrono" => section8_crates::demo_7_chrono(),
+            "8" | "anyhow" => section8_crates::demo_8_anyhow(),
+            "9" | "thiserror" => section8_crates::demo_9_thiserror(),
+            "10" | "crossbeam" => section8_crates::demo_10_crossbeam(),
+            "11" | "rayon" => section8_crates::demo_11_rayon(),
+            "12" | "tracing" => section8_crates::demo_12_tracing(),
+            "13" | "log" => section8_crates::demo_13_log(),
+            "14" | "itertools" => section8_crates::demo_14_itertools(),
+            "15" | "once_cell" => section8_crates::demo_15_once_cell(),
+            "16" | "uuid" => section8_crates::demo_16_uuid(),
+            "17" | "tempfile" => section8_crates::demo_17_tempfile(),
+            "18" | "bitflags" => section8_crates::demo_18_bitflags(),
+            "19" | "parking_lot" => section8_crates::demo_19_parking_lot(),
+            "20" | "collections" => section8_crates::demo_20_advanced_collections(),
+            _ => println!("Unknown demo: {}", demo_name),
+        }
+    }
+    
     /// Print available demos for a section
     pub fn print_section_demos(section: u8) {
         match section {
@@ -341,7 +324,30 @@ pub mod individual_demos {
                 println!("Available Section 7 demos:");
                 println!("  threading, channels, shared, advanced, async, safety");
             }
-            _ => println!("Invalid section number. Use 1-7."),
+            8 => {
+                println!("Available Section 8 demos:");
+                println!("  1/serde - JSON serialization with serde");
+                println!("  2/rand - Random number generation");
+                println!("  3/clap - Command-line argument parsing");
+                println!("  4/tokio - Async runtime and tasks");
+                println!("  5/reqwest - HTTP client requests");
+                println!("  6/regex - Regular expression matching");
+                println!("  7/chrono - Date and time handling");
+                println!("  8/anyhow - Flexible error handling");
+                println!("  9/thiserror - Custom error types");
+                println!("  10/crossbeam - Lock-free data structures");
+                println!("  11/rayon - Data parallelism");
+                println!("  12/tracing - Structured logging");
+                println!("  13/log - Simple logging");
+                println!("  14/itertools - Extended iterator methods");
+                println!("  15/once_cell - Lazy static initialization");
+                println!("  16/uuid - UUID generation");
+                println!("  17/tempfile - Temporary file management");
+                println!("  18/bitflags - Bit flag operations");
+                println!("  19/parking_lot - High-performance synchronization");
+                println!("  20/collections - Advanced collection types");
+            }
+            _ => println!("Invalid section number. Use 1-8."),
         }
     }
 }
