@@ -1474,3 +1474,11 @@ pub fn run_all_demos() {
     println!("✅ Section 8 complete!");
     println!("💡 Key takeaway: Rust's crate ecosystem provides powerful, well-designed libraries for every need!");
 }
+
+/// Get list of available demos for enhanced navigation
+pub fn get_demo_list() -> Vec<&'static str> {
+    vec![
+        "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
+        "11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
+    ]
+}

@@ -519,3 +519,15 @@ pub fn run_all_demos() {
     println!("✅ Section 6 complete!");
     println!("💡 Key takeaway: Idiomatic Rust emphasizes zero-cost abstractions and memory efficiency!");
 }
+
+/// Get list of available demos for enhanced navigation
+pub fn get_demo_list() -> Vec<&'static str> {
+    vec![
+        "iterators",
+        "advanced_iterators",
+        "errors",
+        "shadowing",
+        "memory",
+        "utilities",
+    ]
+}

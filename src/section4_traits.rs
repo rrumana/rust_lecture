@@ -359,3 +359,16 @@ pub fn run_all_demos() {
     println!("✅ Section 4 complete!");
     println!("💡 Key takeaway: Traits enable zero-cost abstractions and code reuse!");
 }
+
+/// Get list of available demos for enhanced navigation
+pub fn get_demo_list() -> Vec<&'static str> {
+    vec![
+        "basic",
+        "generics",
+        "objects",
+        "structs",
+        "associated",
+        "operators",
+        "standard",
+    ]
+}

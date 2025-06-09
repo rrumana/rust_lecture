@@ -176,3 +176,15 @@ pub fn run_all_demos() {
     println!("✅ Section 2 complete!");
     println!("💡 Key takeaway: Rust's ownership system prevents memory leaks and data races at compile time!");
 }
+
+/// Get list of available demos for enhanced navigation
+pub fn get_demo_list() -> Vec<&'static str> {
+    vec![
+        "scope",
+        "move",
+        "copy",
+        "functions",
+        "collections",
+        "patterns",
+    ]
+}

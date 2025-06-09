@@ -248,3 +248,16 @@ pub fn run_all_demos() {
     println!("✅ Section 3 complete!");
     println!("💡 Key takeaway: Borrowing allows safe access to data without ownership transfer!");
 }
+
+/// Get list of available demos for enhanced navigation
+pub fn get_demo_list() -> Vec<&'static str> {
+    vec![
+        "immutable",
+        "mutable",
+        "rules",
+        "lifetimes",
+        "elision",
+        "patterns",
+        "dangling",
+    ]
+}

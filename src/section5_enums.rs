@@ -432,3 +432,16 @@ pub fn run_all_demos() {
     println!("✅ Section 5 complete!");
     println!("💡 Key takeaway: Enums and pattern matching provide safe, expressive error handling!");
 }
+
+/// Get list of available demos for enhanced navigation
+pub fn get_demo_list() -> Vec<&'static str> {
+    vec![
+        "basic",
+        "data",
+        "option",
+        "result",
+        "patterns",
+        "recursive",
+        "propagation",
+    ]
+}

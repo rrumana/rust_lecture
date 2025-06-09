@@ -28,7 +28,7 @@ pub fn run_interactive_demo() {
     loop {
         print_menu();
         
-        let choice = get_user_input("Enter your choice (1-8, or 'q' to quit): ");
+        let choice = get_user_input("Enter your choice (1-8, 'e' for enhanced, or 'q' to quit): ");
         
         match choice.trim() {
             "1" => {
@@ -76,6 +76,10 @@ pub fn run_interactive_demo() {
                 run_all_sections();
                 wait_for_enter();
             }
+            "e" | "E" | "enhanced" => {
+                clear_screen();
+                run_enhanced_navigation_mode();
+            }
             "q" | "Q" | "quit" | "exit" => {
                 println!("Thanks for using the Rust lecture demo system! 🦀");
                 break;
@@ -104,7 +108,11 @@ fn print_menu() {
     println!();
     println!("🚀 SPECIAL OPTIONS:");
     println!("  all - Run all sections sequentially");
+    println!("  e   - Enhanced navigation mode (individual demos)");
     println!("  q   - Quit");
+    println!();
+    println!("💡 Enhanced mode allows you to navigate individual demos with:");
+    println!("   Enter = Next demo, Backspace = Previous demo");
     println!();
 }
 
@@ -382,5 +390,231 @@ pub mod lecture_utils {
         println!("\n💡 KEY CONCEPT: {}", concept);
         println!("   {}", explanation);
         println!();
+    }
+}
+
+/// Enhanced navigation mode for individual demo control
+pub fn run_enhanced_navigation_mode() {
+    println!("🦀 ENHANCED NAVIGATION MODE 🦀");
+    println!("==============================");
+    println!();
+    println!("Choose a section to navigate through individual demos:");
+    println!("  1. Basic Syntax and Constructs (8 demos)");
+    println!("  2. Ownership and Move Semantics (6 demos)");
+    println!("  3. Borrowing, References, and Lifetimes (7 demos)");
+    println!("  4. Trait System and Generics (7 demos)");
+    println!("  5. Enums, Pattern Matching, Option & Result (7 demos)");
+    println!("  6. Idiomatic Patterns & Utilities (6 demos)");
+    println!("  7. Fearless Concurrency (6 demos)");
+    println!("  8. Popular Crate Examples (20 demos)");
+    println!("  all - Navigate through all demos sequentially");
+    println!("  q   - Return to main menu");
+    println!();
+    
+    let choice = get_user_input("Enter your choice: ");
+    
+    match choice.trim() {
+        "1" => run_section_enhanced_navigation(1),
+        "2" => run_section_enhanced_navigation(2),
+        "3" => run_section_enhanced_navigation(3),
+        "4" => run_section_enhanced_navigation(4),
+        "5" => run_section_enhanced_navigation(5),
+        "6" => run_section_enhanced_navigation(6),
+        "7" => run_section_enhanced_navigation(7),
+        "8" => run_section_enhanced_navigation(8),
+        "all" | "ALL" => run_all_demos_enhanced_navigation(),
+        "q" | "Q" => return,
+        _ => {
+            println!("Invalid choice. Returning to main menu.");
+            wait_for_enter();
+        }
+    }
+}
+
+/// Run enhanced navigation for a specific section
+fn run_section_enhanced_navigation(section: u8) {
+    let demos = get_section_demo_list(section);
+    if demos.is_empty() {
+        println!("No demos found for section {}", section);
+        wait_for_enter();
+        return;
+    }
+    
+    clear_screen();
+    println!("🦀 SECTION {} - ENHANCED NAVIGATION 🦀", section);
+    println!("=====================================");
+    println!();
+    println!("Controls:");
+    println!("  Enter = Next demo");
+    println!("  'p'   = Previous demo");
+    println!("  'q'   = Quit to main menu");
+    println!();
+    
+    let mut current_index = 0;
+    
+    loop {
+        // Run the current demo
+        run_individual_demo(section, demos[current_index]);
+        
+        // Get navigation input
+        println!("\n⌨️  Navigation: [Enter]=Next ['p']=Previous ['q']=Quit");
+        match get_enhanced_navigation_input() {
+            NavigationAction::Next => {
+                if current_index < demos.len() - 1 {
+                    current_index += 1;
+                    clear_screen();
+                } else {
+                    println!("\n🎉 You've reached the end of Section {}!", section);
+                    println!("Press Enter to return to menu, or 'p' to go back.");
+                    match get_enhanced_navigation_input() {
+                        NavigationAction::Previous => {
+                            current_index = demos.len() - 1;
+                            clear_screen();
+                        }
+                        _ => break,
+                    }
+                }
+            }
+            NavigationAction::Previous => {
+                if current_index > 0 {
+                    current_index -= 1;
+                    clear_screen();
+                } else {
+                    println!("\n📍 You're at the beginning of Section {}!", section);
+                    println!("Press Enter to continue, or 'q' to quit.");
+                    match get_enhanced_navigation_input() {
+                        NavigationAction::Quit => break,
+                        _ => clear_screen(),
+                    }
+                }
+            }
+            NavigationAction::Quit => break,
+        }
+    }
+}
+
+/// Run all demos with enhanced navigation
+fn run_all_demos_enhanced_navigation() {
+    let mut all_demos = Vec::new();
+    
+    // Collect all demos from all sections
+    for section in 1..=8 {
+        let section_demos = get_section_demo_list(section);
+        for demo_name in section_demos {
+            all_demos.push((section, demo_name));
+        }
+    }
+    
+    if all_demos.is_empty() {
+        println!("No demos found!");
+        wait_for_enter();
+        return;
+    }
+    
+    clear_screen();
+    println!("🦀 ALL SECTIONS - ENHANCED NAVIGATION 🦀");
+    println!("========================================");
+    println!();
+    println!("Controls:");
+    println!("  Enter = Next demo");
+    println!("  'p'   = Previous demo");
+    println!("  'q'   = Quit to main menu");
+    println!();
+    
+    let mut current_index = 0;
+    
+    loop {
+        // Run the current demo
+        let (section, demo_name) = &all_demos[current_index];
+        run_individual_demo(*section, demo_name);
+        
+        // Get navigation input
+        println!("\n⌨️  Navigation: [Enter]=Next ['p']=Previous ['q']=Quit");
+        match get_enhanced_navigation_input() {
+            NavigationAction::Next => {
+                if current_index < all_demos.len() - 1 {
+                    current_index += 1;
+                    clear_screen();
+                } else {
+                    println!("\n🎉 You've completed all demos!");
+                    println!("Press Enter to return to menu, or 'p' to go back.");
+                    match get_enhanced_navigation_input() {
+                        NavigationAction::Previous => {
+                            current_index = all_demos.len() - 1;
+                            clear_screen();
+                        }
+                        _ => break,
+                    }
+                }
+            }
+            NavigationAction::Previous => {
+                if current_index > 0 {
+                    current_index -= 1;
+                    clear_screen();
+                } else {
+                    println!("\n📍 You're at the beginning!");
+                    println!("Press Enter to continue, or 'q' to quit.");
+                    match get_enhanced_navigation_input() {
+                        NavigationAction::Quit => break,
+                        _ => clear_screen(),
+                    }
+                }
+            }
+            NavigationAction::Quit => break,
+        }
+    }
+}
+
+/// Navigation actions for enhanced mode
+#[derive(Debug)]
+enum NavigationAction {
+    Next,
+    Previous,
+    Quit,
+}
+
+/// Get enhanced navigation input from user
+fn get_enhanced_navigation_input() -> NavigationAction {
+    print!("Your choice: ");
+    io::stdout().flush().unwrap();
+    
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).unwrap();
+    
+    match input.trim() {
+        "" => NavigationAction::Next,  // Enter key
+        "q" | "Q" | "quit" => NavigationAction::Quit,
+        "p" | "P" | "prev" | "previous" => NavigationAction::Previous,
+        _ => NavigationAction::Next,  // Default to next for any other input
+    }
+}
+
+/// Get demo list for a section
+fn get_section_demo_list(section: u8) -> Vec<&'static str> {
+    match section {
+        1 => section1_basics::get_demo_list(),
+        2 => section2_ownership::get_demo_list(),
+        3 => section3_borrowing::get_demo_list(),
+        4 => section4_traits::get_demo_list(),
+        5 => section5_enums::get_demo_list(),
+        6 => section6_idioms::get_demo_list(),
+        7 => section7_concurrency::get_demo_list(),
+        8 => section8_crates::get_demo_list(),
+        _ => vec![],
+    }
+}
+
+/// Run an individual demo
+fn run_individual_demo(section: u8, demo_name: &str) {
+    match section {
+        1 => individual_demos::run_section1_demo(demo_name),
+        2 => individual_demos::run_section2_demo(demo_name),
+        3 => individual_demos::run_section3_demo(demo_name),
+        4 => individual_demos::run_section4_demo(demo_name),
+        5 => individual_demos::run_section5_demo(demo_name),
+        6 => individual_demos::run_section6_demo(demo_name),
+        7 => individual_demos::run_section7_demo(demo_name),
+        8 => individual_demos::run_section8_demo(demo_name),
+        _ => println!("Unknown section: {}", section),
     }
 }

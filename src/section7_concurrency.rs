@@ -512,3 +512,15 @@ pub fn run_all_demos() {
     println!("✅ Section 7 complete!");
     println!("💡 Key takeaway: Rust's type system prevents data races and ensures memory safety in concurrent code!");
 }
+
+/// Get list of available demos for enhanced navigation
+pub fn get_demo_list() -> Vec<&'static str> {
+    vec![
+        "threading",
+        "channels",
+        "shared",
+        "advanced",
+        "async",
+        "safety",
+    ]
+}

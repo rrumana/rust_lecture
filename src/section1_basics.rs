@@ -172,3 +172,17 @@ pub fn run_all_demos() {
     
     println!("✅ Section 1 complete!");
 }
+
+/// Get list of available demos for enhanced navigation
+pub fn get_demo_list() -> Vec<&'static str> {
+    vec![
+        "hello",
+        "variables",
+        "functions",
+        "if",
+        "match",
+        "for",
+        "while",
+        "blocks",
+    ]
+}
